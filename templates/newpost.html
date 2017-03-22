@@ -7,7 +7,7 @@
   {#% include "partials/form_wrap_open.html" %#}
   <form method="GET" action="/" target="_top" class="p0 m0 px3 mb4">
     <fieldset class="border-none p0 m0">
-      <legend class="h2 block mb4">Members, please log in:</legend>
+      <legend class="h2 block mb4">Sign up:</legend>
 
   <!-- start inputs -->
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
@@ -15,24 +15,25 @@
     <label for="userid" class="absolute top-0 right-0 bottom-0 left-0">User Name</label>
   </div>
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="password" value="{{password}}" name="password" id="passid" class="block border-none p0 m0" placeholder="Password">
+    <input type="password" value="" name="password" id="passid" class="block border-none p0 m0" placeholder="Password">
     <label for="passid" class="absolute top-0 right-0 bottom-0 left-0">Password</label>
   </div>
+  <div class="ampstart-input inline-block relative m0 p0 mb3 ">
+    <input type="password" value="" name="confirm_password" id="cpassid" class="block border-none p0 m0" placeholder="Retype Password">
+    <label for="cpassid" class="absolute top-0 right-0 bottom-0 left-0">Confirm Password</label>
+  </div>
+  <div class="ampstart-input inline-block relative m0 p0 mb3 ">
+    <input type="email" value="{{email}}" name="email" id="emailid" class="block border-none p0 m0" placeholder="email@address">
+    <label for="emailid" class="absolute top-0 right-0 bottom-0 left-0">Email (optional)</label>
+  </div>
+
   <!-- end inputs -->
   <!-- start submit -->
-  <input type="submit" name="submit" value="Login" id="submit" class="ampstart-btn mb3 ampstart-btn-secondary">
+  <input type="submit" name="submit" value="Sign up" id="submit" class="ampstart-btn mb3 ampstart-btn-secondary">
   <!-- end submit -->
 
     </fieldset>
   </form>
-  {#% include "partials/form_wrap_close.html" %#}
-    <form method="GET" action="/signup" target="_top" class="p0 m0 px3 mb4">
-      <fieldset class="border-none p0 m0">
-        <legend class="h2 block mb4">Not a member yet?</legend>
-        <button class="ampstart-btn ampstart-btn-secondary mb3">Sign up now!</button>
-      </fieldset>
-   </form>
-
   </div>
 </div>
 
