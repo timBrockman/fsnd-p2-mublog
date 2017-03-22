@@ -84,3 +84,9 @@ like-ability:
 
 template:
   - [ ] site navigation
+
+
+### in progress
+  - [ ] template chopping rough
+  - [ ] static site_data schema
+
