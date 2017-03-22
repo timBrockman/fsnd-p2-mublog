@@ -2,7 +2,7 @@
   <!-- Start Navbar -->
   <header class="ampstart-headerbar fixed flex justify-start items-center top-0 left-0 right-0 pl2 pr4">
     <div role="button" on="tap:header-sidebar.toggle" tabindex="0" class="ampstart-navbar-trigger  pr2">☰</div>
-        <h2>the MUBlog</h2>
+        <h2><a href="/">{{params.site.title}}</a></h2>
   </header>
 
 <!-- Start Sidebar -->
@@ -12,37 +12,26 @@
   </div>
   <nav class="ampstart-sidebar-nav ampstart-nav">
     <ul class="list-reset m0 p0 caps h5">
+          <li class="ampstart-nav-item"><a href="/">Latest Articles</a></li>
+{#% if login %#}
           <li class="ampstart-nav-item ampstart-nav-dropdown relative">
-
 <!-- Start Dropdown-inline -->
 <amp-accordion layout="container" disable-session-states="" class="ampstart-dropdown">
   <section>
-    <header>Fashion</header>
+    <header>member pages</header>
     <ul class="ampstart-dropdown-items list-reset m0 p0">
-        <li class="ampstart-dropdown-item"><a href="#" class="text-decoration-none">Styling Tips</a></li>
-        <li class="ampstart-dropdown-item"><a href="#" class="text-decoration-none">Designers</a></li>
+        <li class="ampstart-dropdown-item"><a href="/newpost" class="text-decoration-none">add a post</a></li>
+        <li class="ampstart-dropdown-item"><a href="/welcome" class="text-decoration-none">edit posts</a></li>
+        <li class="ampstart-dropdown-item"><a href="/logout" class="text-decoration-none">log out</a></li>
     </ul>
   </section>
 </amp-accordion>
 <!-- End Dropdown-inline -->
           </li>
-          <li class="ampstart-nav-item"><a href="#">Travel</a></li>
-          <li class="ampstart-nav-item ampstart-nav-dropdown relative">
-
-<!-- Start Dropdown-inline -->
-<amp-accordion layout="container" disable-session-states="" class="ampstart-dropdown">
-  <section>
-    <header>Food</header>
-    <ul class="ampstart-dropdown-items list-reset m0 p0">
-        <li class="ampstart-dropdown-item"><a href="#" class="text-decoration-none">Recipes</a></li>
-        <li class="ampstart-dropdown-item"><a href="#" class="text-decoration-none">Hosting Tips</a></li>
-    </ul>
-  </section>
-</amp-accordion>
-<!-- End Dropdown-inline -->
-          </li>
-          <li class="ampstart-nav-item"><a href="#">Beauty</a></li>
-          <li class="ampstart-nav-item"><a href="#">Shop</a></li>
+{#% else %#}
+          <li class="ampstart-nav-item"><a href="/signup">Sign Up</a></li>
+          <li class="ampstart-nav-item"><a href="/login">Login</a></li>
+{#% endif %#}
     </ul>
   </nav>
 
@@ -64,8 +53,8 @@
 </ul>
 
     <ul class="ampstart-sidebar-faq list-reset m0">
-        <li class="ampstart-faq-item"><a href="#" class="text-decoration-none">About</a></li>
-        <li class="ampstart-faq-item"><a href="#" class="text-decoration-none">Contact</a></li>
+      <li class="ampstart-faq-item"><a href="https://github.com/timBrockman/fsnd-p2-mublog" class="text-decoration-none">Source Code</a></li>
+      <li class="ampstart-faq-item"><a href="https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004" class="text-decoration-none">Udacity FSND</a></li>
     </ul>
 
   
