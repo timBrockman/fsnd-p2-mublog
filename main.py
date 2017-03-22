@@ -30,6 +30,12 @@ class MainPage(Handler):
         params = {'site':sitewide_params, 'page':page}
         self.render("list.html", params=params)
 
+class NewpostPage(Handler):
+    def get(self):
+        page = {'title':'Write a new post'}
+        params = {'site':sitewide_params, 'page':page}
+        self.render("newpost.html", params=params)
+
 class LoginPage(Handler):
     def get(self):
         page = {'title':'Sign in to your account.'}
@@ -50,7 +56,7 @@ class HomePage(Handler):
 
 app = webapp2.WSGIApplication([
     (r'/', MainPage),
-    (r'/newpost/?', MainPage),
+    (r'/newpost/?', NewpostPage),
     (r'/blog/?', MainPage),
     (r'/blog/(\d+)', MainPage),
     (r'/edit/(\d+)', MainPage),
