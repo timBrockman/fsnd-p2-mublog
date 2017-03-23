@@ -121,7 +121,7 @@ class SignupPage(Handler):
         if username and password and (password == verify):
             error = False
         else:
-            error = True
+            error = "there are plenty of problems"
         params = {}
         params['username'] = username
         params['password'] = password
