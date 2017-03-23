@@ -36,6 +36,15 @@ class NewpostPage(Handler):
         params = {'site':sitewide_params, 'page':page}
         self.render("newpost.html", params=params)
 
+class EditpostPage(Handler):
+    def get(self, post_id):
+        title = 'Edit post ' + post_id
+        permalink = '/blog/'+ post_id
+        page = {'title':title,
+                'permalink':permalink}
+        params = {'site':sitewide_params, 'page':page}
+        self.render("editpost.html", params=params)
+
 class LoginPage(Handler):
     def get(self):
         page = {'title':'Sign in to your account.'}
@@ -58,9 +67,10 @@ app = webapp2.WSGIApplication([
     (r'/', MainPage),
     (r'/newpost/?', NewpostPage),
     (r'/blog/?', MainPage),
-    (r'/blog/(\d+)', MainPage),
-    (r'/edit/(\d+)', MainPage),
-    (r'/delete/(\d+)', MainPage),
+    (r'/blog/([0-9]+)', EditpostPage),
+    (r'/edit/?', MainPage),
+    (r'/edit/([0-9]+)', MainPage),
+    (r'/delete/([0-9]+)', MainPage),
     (r'/login/?', LoginPage),
     (r'/welcome/?', HomePage),
     (r'/signup/?', SignupPage),
