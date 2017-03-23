@@ -3,6 +3,7 @@ mublog this will need a bit of refactoring to lint
 """
 import os
 import re
+import json
 from datetime import date
 
 import webapp2
@@ -33,6 +34,20 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         """ convience write parse"""
         self.write(self.parse_template(template, **kw))
+
+    def xhr_json(self, params):
+        """ adds cors for json post requests """
+        self.response.headers.add('Access-Control-Allow-Origin', '*')
+        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080')
+        self.response.headers.add('Access-Control-Expose-Headers',
+                                  'AMP-Access-Control-Allow-Source-Origin')
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers.add('Access-Control-Allow-Headers',
+                                  'Origin, X-Requested-With, Content-Type, Accept')
+        self.response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
+        if params['error']:
+            self.response.set_status(400)
+        self.response.out.write(json.dumps(params))
 
 
 class MainPage(Handler):
@@ -98,20 +113,20 @@ class SignupPage(Handler):
         self.render("signup.html", params=params)
 
     def post(self):
-        """ handle signup form submission"""
+        """ handle ajax signup form submission"""
         username = self.request.get("username")
         password = self.request.get("password")
         verify = self.request.get("verify")
 
         if username and password and (password == verify):
-            formcheck = True
+            error = False
         else:
-            formcheck = False
-        params = {'site':sitewide_params, 'page':self.page}
+            error = True
+        params = {}
         params['username'] = username
         params['password'] = password
-        params['formcheck'] = formcheck
-        self.render("signup.html", params = params)
+        params['error'] = error
+        self.xhr_json(params)
 
 
 class HomePage(Handler):

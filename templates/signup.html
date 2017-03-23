@@ -5,28 +5,52 @@
 <div class="flex flex-wrap justify-center content-center">
   <div class="ampstart-card max-width-1 pt2">
   {#% include "partials/form_wrap_open.html" %#}
-  <form method="POST" action="/signup" target="_top" class="p0 m0 px3 mb4">
+  <form method="POST" 
+        action-xhr="/signup" 
+        class="p0 m0 px3 mb4"
+        custom-validation-reporting="show-all-on-submit">
     <fieldset class="border-none p0 m0">
       <legend class="h2 block mb4">Sign up:</legend>
 
   <!-- start inputs -->
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="text" value="{{username}}" name="username" id="userid" class="block border-none p0 m0" placeholder="User_Name">
+    <input type="text" value="" name="username" id="userid" class="block border-none p0 m0" placeholder="User_Name" required pattern="[a-zA-Z0-9]{3,10}">
     <label for="userid" class="absolute top-0 right-0 bottom-0 left-0">User Name</label>
+    <span visible-when-invalid="valueMissing" validation-for="userid"></span>
+    <span visible-when-invalid="patternMismatch" validation-for="userid">
+      3-10 lower case letters or numbers allowed
+    </span>
   </div>
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="password" value="" name="password" id="passid" class="block border-none p0 m0" placeholder="Password">
+    <input type="password" value="" name="password" id="passid" class="block border-none p0 m0" placeholder="Password" required pattern=".{8,25}">
     <label for="passid" class="absolute top-0 right-0 bottom-0 left-0">Password</label>
+    <span visible-when-invalid="valueMissing" validation-for="passid"></span>
+    <span visible-when-invalid="patternMismatch" validation-for="passid">
+      Passwords must be at least 8 charecters long.
+    </span>
   </div>
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="password" value="" name="verify" id="cpassid" class="block border-none p0 m0" placeholder="Retype Password">
+    <input type="password" value="" name="verify" id="cpassid" class="block border-none p0 m0" placeholder="Retype Password" required pattern=".{8,25}">
     <label for="cpassid" class="absolute top-0 right-0 bottom-0 left-0">Confirm Password</label>
+    <span visible-when-invalid="valueMissing" validation-for="cpassid"></span>
+    <span visible-when-invalid="patternMismatch" validation-for="cpassid">
+      Passwords must match.
+    </span>
   </div>
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="email" value="{{email}}" name="email" id="emailid" class="block border-none p0 m0" placeholder="email@address">
+    <input type="email" value="" name="email" id="emailid" class="block border-none p0 m0" placeholder="email@address">
     <label for="emailid" class="absolute top-0 right-0 bottom-0 left-0">Email (optional)</label>
   </div>
-
+  <div submit-success>
+    <template type="amp-mustache">
+      Subscription successful!
+    </template>
+  </div>
+  <div submit-error>
+    <template type="amp-mustache">
+      Subscription failed!
+    </template>
+  </div>
   <!-- end inputs -->
   <!-- start submit -->
   <input type="submit" name="submit" value="Sign up" id="submit" class="ampstart-btn mb3 ampstart-btn-secondary">
