@@ -21,16 +21,16 @@ class Handler(webapp2.RequestHandler):
     """
 
     def write(self, *a, **kw):
-        # convience response
+        """ convience response"""
         self.response.out.write(*a, **kw)
 
     def parse_template(self, template, **params):
-        # convience render
+        """ convience render"""
         j_template = jinja_env.get_template(template)
         return j_template.render(params)
 
     def render(self, template, **kw):
-        # convience write parse
+        """ convience write parse"""
         self.write(self.parse_template(template, **kw))
 
 
@@ -40,7 +40,7 @@ class MainPage(Handler):
     """
 
     def get(self):
-        # page get
+        """ page get"""
         page = {'title':'Recent Headlines'}
         params = {'site':sitewide_params, 'page':page}
         self.render("list.html", params=params)
@@ -52,7 +52,7 @@ class NewpostPage(Handler):
     """
 
     def get(self):
-        # page get
+        """ page get"""
         page = {'title':'Write a new post'}
         params = {'site':sitewide_params, 'page':page}
         self.render("newpost.html", params=params)
@@ -64,7 +64,7 @@ class EditpostPage(Handler):
     """
 
     def get(self, post_id):
-        # page get
+        """ page get"""
         title = 'Edit post ' + post_id
         permalink = '/blog/'+ post_id
         page = {'title':title,
@@ -79,7 +79,7 @@ class LoginPage(Handler):
     """
 
     def get(self):
-        # page get
+        """ page get"""
         page = {'title':'Sign in to your account.'}
         params = {'site':sitewide_params, 'page':page}
         self.render("login.html", params=params)
@@ -91,7 +91,7 @@ class SignupPage(Handler):
     """
 
     def get(self):
-        # page get
+        """ page get"""
         page = {'title':'Sign up for a free account!'}
         params = {'site':sitewide_params, 'page':page}
         self.render("signup.html", params=params)
@@ -103,7 +103,7 @@ class HomePage(Handler):
     """
 
     def get(self):
-        # main get
+        """ main get"""
         page = {'title':'Your Blog Posts'}
         params = {'site':sitewide_params, 'page':page}
         self.render("login.html", params=params)
