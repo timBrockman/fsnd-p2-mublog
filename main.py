@@ -2,6 +2,7 @@
 mublog this will need a bit of refactoring to lint
 """
 import os
+import re
 from datetime import date
 
 import webapp2
@@ -17,7 +18,7 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 
 class Handler(webapp2.RequestHandler):
     """
-    Handler is a convience class for parsing params and rendering templates
+    Handler is a helper class for parsing params and rendering templates
     """
 
     def write(self, *a, **kw):
@@ -90,11 +91,27 @@ class SignupPage(Handler):
     SignupPage Handler
     """
 
+    page = {'title':'Sign up for a free account!'}
     def get(self):
         """ page get"""
-        page = {'title':'Sign up for a free account!'}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':sitewide_params, 'page':self.page}
         self.render("signup.html", params=params)
+
+    def post(self):
+        """ handle signup form submission"""
+        username = self.request.get("username")
+        password = self.request.get("password")
+        verify = self.request.get("verify")
+
+        if username and password and (password == verify):
+            formcheck = True
+        else:
+            formcheck = False
+        params = {'site':sitewide_params, 'page':self.page}
+        params['username'] = username
+        params['password'] = password
+        params['formcheck'] = formcheck
+        self.render("signup.html", params = params)
 
 
 class HomePage(Handler):
