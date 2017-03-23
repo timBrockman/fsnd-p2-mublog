@@ -36,7 +36,13 @@ class Handler(webapp2.RequestHandler):
         self.write(self.parse_template(template, **kw))
 
     def xhr_json(self, params):
-        """ adds cors for json post requests """
+        """ handles the json shtuff
+                adds cors for json post requests
+            params will be json dumped
+            params.error
+                if error: will respond with 400
+                error can be used for a message
+        """
         self.response.headers.add('Access-Control-Allow-Origin', '*')
         self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080')
         self.response.headers.add('Access-Control-Expose-Headers',
