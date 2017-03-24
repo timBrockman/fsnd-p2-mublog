@@ -8,13 +8,28 @@ from datetime import date
 
 import webapp2
 import jinja2
+from google.appengine.ext import db
 
 #from google.appengine.ext import ndb
+
 sitewide_params = {'title':'MUBlog'}
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
+
+class BlogPost(db.Model):
+    """db blog post entity"""
+    subject = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    author = db.StringProperty(required=True)
+    likes = db.IntegerProperty(required=True)
+
+
+class Author(db.Model):
+    """db author entity"""
+    pass
 
 
 class Handler(webapp2.RequestHandler):
@@ -46,13 +61,15 @@ class Handler(webapp2.RequestHandler):
         self.response.headers.add('Access-Control-Allow-Origin', '*')
         self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080')
         self.response.headers.add('Access-Control-Expose-Headers',
-                                  'AMP-Access-Control-Allow-Source-Origin')
+                                  'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers.add('Access-Control-Allow-Headers',
                                   'Origin, X-Requested-With, Content-Type, Accept')
         self.response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
         if params['error']:
             self.response.set_status(400)
+        elif params['redirect']:
+            self.response.headers.add('AMP-Redirect-To', params['redirect'])
         self.response.out.write(json.dumps(params))
 
 
