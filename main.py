@@ -79,6 +79,18 @@ class NewpostPage(Handler):
         params = {'site':sitewide_params, 'page':page}
         self.render("newpost.html", params=params)
 
+    def post(self):
+        """page post"""
+        params = {}
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+        if content and subject:
+            params['error'] = False
+        else:
+            params['error'] = "The subject and content are both required."
+        params['subject'] = subject
+        params['content'] = content
+        self.xhr_json(params)
 
 class EditpostPage(Handler):
     """

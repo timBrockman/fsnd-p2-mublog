@@ -5,18 +5,23 @@
 <div class="flex flex-wrap justify-center content-center">
   <div class="ampstart-card max-width-1 pt2">
   {#% include "partials/form_wrap_open.html" %#}
-  <form method="POST" action="/" target="_top" class="p0 m0 px3 mb4">
+  <form method="POST" 
+        action-xhr="/newpost"
+        class="p0 m0 px3 mb4"
+        custom-validation-reporting="show-all-on-submit">
     <fieldset class="border-none p0 m0">
       <legend class="h2 block mb4">New Post:</legend>
 
   <!-- start inputs -->
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <input type="text" value="{{subject}}" name="subject" id="subjectid" class="block border-none p0 m0" placeholder="Post Title">
+    <input type="text" value="{{subject}}" name="subject" id="subjectid" class="block border-none p0 m0" placeholder="Post Title" required>
     <label for="subjectid" class="absolute top-0 right-0 bottom-0 left-0">Post Subject/Title</label>
+    <span visible-when-invalid="valueMissing" validation-for="subjectid"></span>
   </div>
   <div class="ampstart-input inline-block relative m0 p0 mb3 ">
-    <textarea value="{{content}}" name="content" id="contentid" rows="10" class="block border-none p0 m0" placeholder="Post content"></textarea>
+    <textarea value="{{content}}" name="content" id="contentid" rows="10" class="block border-none p0 m0" placeholder="Post content" required></textarea>
     <label for="contentid" class="absolute top-0 right-0 bottom-0 left-0">Post Content</label>
+    <span visible-when-invalid="valueMissing" validation-for="contentid"></span>
   </div>
 
   <!-- end inputs -->
