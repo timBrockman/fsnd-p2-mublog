@@ -8,6 +8,7 @@ from datetime import date
 
 import webapp2
 import jinja2
+import ssl
 from google.appengine.ext import db
 
 #from google.appengine.ext import ndb
@@ -17,9 +18,14 @@ sitewide_params = {'title':'MUBlog'}
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
+# Models
 
-class BlogPost(db.Model):
-    """db blog post entity"""
+class PostEntity(db.Model):
+    """ db blog post entity
+        arguments
+            permalink: currently dateTime with non-digits stripped
+    """
+    permalink = db.StringProperty(required=True)
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
@@ -27,10 +33,11 @@ class BlogPost(db.Model):
     likes = db.IntegerProperty(required=True)
 
 
-class Author(db.Model):
+class AuthorEntity(db.Model):
     """db author entity"""
     pass
 
+# controller helper
 
 class Handler(webapp2.RequestHandler):
     """
@@ -59,7 +66,7 @@ class Handler(webapp2.RequestHandler):
                 error can be used for a message
         """
         self.response.headers.add('Access-Control-Allow-Origin', '*')
-        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080')
+        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080, https://localhost:8080')
         self.response.headers.add('Access-Control-Expose-Headers',
                                   'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
         self.response.headers['Content-Type'] = 'application/json'
@@ -70,8 +77,10 @@ class Handler(webapp2.RequestHandler):
             self.response.set_status(400)
         elif params['redirect']:
             self.response.headers.add('AMP-Redirect-To', params['redirect'])
+            self.redirect(params['redirect'])
         self.response.out.write(json.dumps(params))
 
+# controllers
 
 class MainPage(Handler):
     """
@@ -80,8 +89,9 @@ class MainPage(Handler):
 
     def get(self):
         """ page get"""
+        posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")
         page = {'title':'Recent Headlines'}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':sitewide_params, 'page':page, 'posts':posts}
         self.render("list.html", params=params)
 
 
@@ -103,6 +113,9 @@ class NewpostPage(Handler):
         content = self.request.get('content')
         if content and subject:
             params['error'] = False
+            blog_posts = PostEntity(subject=subject, content=content, author="test", likes=0)
+            blog_posts.put()
+            params['redirect'] = 'https://localhost:8080/' # blog/' + str(post.key().id())
         else:
             params['error'] = "The subject and content are both required."
         params['subject'] = subject
@@ -175,6 +188,10 @@ class HomePage(Handler):
         params = {'site':sitewide_params, 'page':page}
         self.render("login.html", params=params)
 
+
+# router
+# app_scheme = 'https' # use this if you need schemes
+
 app = webapp2.WSGIApplication([
     (r'/', MainPage),
     (r'/newpost/?', NewpostPage),
@@ -187,4 +204,4 @@ app = webapp2.WSGIApplication([
     (r'/welcome/?', HomePage),
     (r'/signup/?', SignupPage),
     (r'/logout/?', MainPage),
-], debug=True)
+] , debug=True)
