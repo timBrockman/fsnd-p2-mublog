@@ -22,8 +22,14 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 
 class PostEntity(db.Model):
     """ db blog post entity
-        arguments
-            permalink: currently dateTime with non-digits stripped
+        properties
+            permalink: currently timestamp in seconds datetime.now().strftime('%s')
+            subject: blog post title
+            content: blog post body
+            created: timestamp in normal y-m-d h:m:s
+            author: author username
+            likes: number of likes
+            liked_by: list of strings of usernames
     """
     permalink = db.StringProperty(required=True)
     subject = db.StringProperty(required=True)
@@ -31,10 +37,18 @@ class PostEntity(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     author = db.StringProperty(required=True)
     likes = db.IntegerProperty(required=True)
+    liked_by = db.StringListProperty(required=True)
 
 
 class AuthorEntity(db.Model):
-    """db author entity"""
+    """ db author entity
+        properties
+            username: unique string
+            password: hashed pass
+            email: optional email address
+            maybe blogposts: StringListProperty of permalinks
+            maybe likes: StringListProperty of liked permalinks
+    """
     pass
 
 # controller helper
@@ -66,7 +80,8 @@ class Handler(webapp2.RequestHandler):
                 error can be used for a message
         """
         self.response.headers.add('Access-Control-Allow-Origin', '*')
-        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 'http://localhost:8080, https://localhost:8080')
+        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 
+                                  'http://localhost:8080, https://localhost:8080')
         self.response.headers.add('Access-Control-Expose-Headers',
                                   'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
         self.response.headers['Content-Type'] = 'application/json'
