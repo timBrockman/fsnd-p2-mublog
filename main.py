@@ -1,24 +1,30 @@
 """
-mublog this will need a bit of refactoring to lint
+mublog
+    this will probably never lint and be stuck with the old nasty
+    webapp2 reccommended monolith structure
 """
+
+import datetime
+import json
 import os
 import re
-import json
-from datetime import date
+import ssl
 
 import webapp2
 import jinja2
-import ssl
 from google.appengine.ext import db
 
-#from google.appengine.ext import ndb
-
-sitewide_params = {'title':'MUBlog'}
-
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
+#  jinja2 Environment constants
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
-# Models
+
+#sitewide contsants (modelish)
+SITEWIDE_PARAMS = {'title':'MUBlog'}
+
+"""
+start models
+"""
 
 class PostEntity(db.Model):
     """ db blog post entity
@@ -34,7 +40,7 @@ class PostEntity(db.Model):
     permalink = db.StringProperty(required=True)
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
+    created = db.StringProperty(required=True)
     author = db.StringProperty(required=True)
     likes = db.IntegerProperty(required=True)
     liked_by = db.StringListProperty(required=True)
@@ -51,7 +57,9 @@ class AuthorEntity(db.Model):
     """
     pass
 
-# controller helper
+"""
+start handlers
+"""
 
 class Handler(webapp2.RequestHandler):
     """
@@ -64,7 +72,7 @@ class Handler(webapp2.RequestHandler):
 
     def parse_template(self, template, **params):
         """ convience render"""
-        j_template = jinja_env.get_template(template)
+        j_template = JINJA_ENV.get_template(template)
         return j_template.render(params)
 
     def render(self, template, **kw):
@@ -80,7 +88,7 @@ class Handler(webapp2.RequestHandler):
                 error can be used for a message
         """
         self.response.headers.add('Access-Control-Allow-Origin', '*')
-        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', 
+        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin',
                                   'http://localhost:8080, https://localhost:8080')
         self.response.headers.add('Access-Control-Expose-Headers',
                                   'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
@@ -106,7 +114,7 @@ class MainPage(Handler):
         """ page get"""
         posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")
         page = {'title':'Recent Headlines'}
-        params = {'site':sitewide_params, 'page':page, 'posts':posts}
+        params = {'site':SITEWIDE_PARAMS, 'page':page, 'posts':posts}
         self.render("list.html", params=params)
 
 
@@ -118,7 +126,7 @@ class NewpostPage(Handler):
     def get(self):
         """ page get"""
         page = {'title':'Write a new post'}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("newpost.html", params=params)
 
     def post(self):
@@ -126,9 +134,18 @@ class NewpostPage(Handler):
         params = {}
         subject = self.request.get('subject')
         content = self.request.get('content')
+        post_time_stamp = datetime.datetime.now()
+        permalink = post_time_stamp.strftime('%s')
+
         if content and subject:
             params['error'] = False
-            blog_posts = PostEntity(subject=subject, content=content, author="test", likes=0)
+            blog_posts = PostEntity(permalink=permalink,
+                                    subject=subject,
+                                    content=content,
+                                    created=str(post_time_stamp),
+                                    author="testuser",
+                                    likes=0,
+                                    liked_by=["testuser"])
             blog_posts.put()
             params['redirect'] = 'https://localhost:8080/' # blog/' + str(post.key().id())
         else:
@@ -148,7 +165,7 @@ class EditpostPage(Handler):
         permalink = '/blog/'+ post_id
         page = {'title':title,
                 'permalink':permalink}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("editpost.html", params=params)
 
 
@@ -160,7 +177,7 @@ class LoginPage(Handler):
     def get(self):
         """ page get"""
         page = {'title':'Sign in to your account.'}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("login.html", params=params)
 
 
@@ -172,7 +189,7 @@ class SignupPage(Handler):
     page = {'title':'Sign up for a free account!'}
     def get(self):
         """ page get"""
-        params = {'site':sitewide_params, 'page':self.page}
+        params = {'site':SITEWIDE_PARAMS, 'page':self.page}
         self.render("signup.html", params=params)
 
     def post(self):
@@ -194,18 +211,19 @@ class SignupPage(Handler):
 
 class HomePage(Handler):
     """
-    HopePage Handler
+    HomePage Handler
     """
 
     def get(self):
         """ main get"""
         page = {'title':'Your Blog Posts'}
-        params = {'site':sitewide_params, 'page':page}
+        params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("login.html", params=params)
 
-
-# router
-# app_scheme = 'https' # use this if you need schemes
+"""
+start simple router
+    (this will never lint)
+"""
 
 app = webapp2.WSGIApplication([
     (r'/', MainPage),
@@ -219,4 +237,5 @@ app = webapp2.WSGIApplication([
     (r'/welcome/?', HomePage),
     (r'/signup/?', SignupPage),
     (r'/logout/?', MainPage),
-] , debug=True)
+], debug=True)
+
