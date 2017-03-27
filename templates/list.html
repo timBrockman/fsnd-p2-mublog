@@ -5,7 +5,7 @@
 {{params.post}}
 {% for post in params.posts %}
 <section class="flex justify-center">
-      <h2 class="mb1 px3">{{post.created}}{{post.subject}}</h2>
+      <a href="blog/{{ post.key().id() }}"><h2 class="mb1 px3">{{post.subject}}</h2></a>
   <!-- Start byline -->
   <address class="ampstart-byline clearfix mb4 px3 h5">
       <time class="ampstart-byline-pubdate block bold my1" datetime="{{post.created.strftime('%Y-%m-%d')}}">{{post.created.strftime('%Y-%m-%d')}}</time>

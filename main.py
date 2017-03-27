@@ -29,7 +29,6 @@ start models
 class PostEntity(db.Model):
     """ db blog post entity
         properties
-            permalink: currently timestamp in seconds datetime.now().strftime('%s')
             subject: blog post title
             content: blog post body
             created: timestamp in normal y-m-d h:m:s
@@ -37,10 +36,9 @@ class PostEntity(db.Model):
             likes: number of likes
             liked_by: list of strings of usernames
     """
-    permalink = db.StringProperty(required=True)
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    created = db.StringProperty(required=True)
+    created = db.DateTimeProperty(required=True)
     author = db.StringProperty(required=True)
     likes = db.IntegerProperty(required=True)
     liked_by = db.StringListProperty(required=True)
@@ -112,11 +110,22 @@ class MainPage(Handler):
 
     def get(self):
         """ page get"""
-        posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")
+        """posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")"""
+        posts = PostEntity.all().order('-created')
         page = {'title':'Recent Headlines'}
         params = {'site':SITEWIDE_PARAMS, 'page':page, 'posts':posts}
         self.render("list.html", params=params)
 
+
+class SinglepostPage(Handler):
+    """
+    Single blog post Handler
+    """
+    def get(self, post_id):
+        """page get"""
+        current_post = PostEntity.get_by_id(post_id)
+        params = {'site':SITEWIDE_PARAMS, 'current_post':current_post}
+        self.render("single.html", params=params)
 
 class NewpostPage(Handler):
     """
@@ -142,7 +151,7 @@ class NewpostPage(Handler):
             blog_posts = PostEntity(permalink=permalink,
                                     subject=subject,
                                     content=content,
-                                    created=str(post_time_stamp),
+                                    created=post_time_stamp,
                                     author="testuser",
                                     likes=0,
                                     liked_by=["testuser"])
@@ -229,9 +238,9 @@ app = webapp2.WSGIApplication([
     (r'/', MainPage),
     (r'/newpost/?', NewpostPage),
     (r'/blog/?', MainPage),
-    (r'/blog/([0-9]+)', EditpostPage),
+    (r'/blog/([0-9]+)', SinglepostPage),
     (r'/edit/?', MainPage),
-    (r'/edit/([0-9]+)', MainPage),
+    (r'/edit/([0-9]+)', EditpostPage),
     (r'/delete/([0-9]+)', MainPage),
     (r'/login/?', LoginPage),
     (r'/welcome/?', HomePage),

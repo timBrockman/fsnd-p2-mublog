@@ -16,5 +16,3 @@ libraries:
   version: latest
 - name: ssl
   version: latest
-- name: datetime
-  version: latest
