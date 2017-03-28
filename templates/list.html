@@ -4,7 +4,7 @@
 {% include "partials/content_header.html" %}
 {{params.post}}
 {% for post in params.posts %}
-<section class="flex justify-center">
+<section class="flex justify-between">
       <a href="blog/{{ post.key().id() }}"><h2 class="mb1 px3">{{post.subject}}</h2></a>
   <!-- Start byline -->
   <address class="ampstart-byline clearfix mb4 px3 h5">

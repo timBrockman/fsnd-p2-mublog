@@ -1,9 +1,9 @@
-        <header class="flex justify-center content-center">
-          <h1 class="mb1 px3">{{params.page.title}}</h1>
-{% if params.page.author or params.page.date %}
+        <header class="flex justify-center content-center border-bottom mb2">
+          <h1 class="mb1 px3">{{params.page.subject}}</h1>
+{% if params.page.author or params.page.created %}
   <!-- Start byline -->
   <address class="ampstart-byline clearfix mb4 px3 h5">
-    {% if params.page.date %}<time class="ampstart-byline-pubdate block bold my1" datetime="{{params.page.date.strftime('%Y-%m-%d')}}">{{params.page.date.strftime('%Y-%m-%d')}}</time>{% endif %}
+    {% if params.page.created %}<time class="ampstart-byline-pubdate block bold my1" datetime="{{params.page.created.strftime('%Y-%m-%d')}}">{{params.page.created.strftime('%Y-%m-%d')}}</time>{% endif %}
     {% if params.page.author %}<div class="block bold my1">written by {{params.page.author}}</div>{% endif %}
   </address>
   <!-- End byline -->

@@ -5,10 +5,14 @@ mublog
 """
 
 import datetime
+import hashlib
 import json
 import os
+import random
 import re
 import ssl
+import string
+from secret import SECRET
 
 import webapp2
 import jinja2
@@ -21,6 +25,26 @@ JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
 
 #sitewide contsants (modelish)
 SITEWIDE_PARAMS = {'title':'MUBlog'}
+
+"""
+Hashing helper functions
+"""
+def gen_salt():
+    """returns 8 letter string"""
+    return ''.join(random.choice(string.letters) for x in xrange(8))
+
+def hash_this(tohash, salt=None):
+    """returns hash + salt from tohash"""
+    if salt is None:
+        salt = gen_salt()
+    return hashlib.sha256(str(tohash) + SECRET + salt).hexdigest() + salt
+
+def check_hash(tovalidate, hashed):
+    """returns true if tovalidate matches hashed"""
+    salt = hashed[-8:]
+    check = hash_this(tovalidate, salt)
+    return hashed == check
+
 
 """
 start models
@@ -48,10 +72,16 @@ class AuthorEntity(db.Model):
     """ db author entity
         properties
             username: unique string
-            password: hashed pass
+            password: hashed pass + username + salt
             email: optional email address
             maybe blogposts: StringListProperty of permalinks
             maybe likes: StringListProperty of liked permalinks
+    """
+    pass
+
+class CommentEntity(db.Model):
+    """ db comments
+        properties
     """
     pass
 
@@ -107,12 +137,11 @@ class MainPage(Handler):
     """
     MainPage Route Handler
     """
-
     def get(self):
         """ page get"""
         """posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")"""
         posts = PostEntity.all().order('-created')
-        page = {'title':'Recent Headlines'}
+        page = {'subject':'Recent Headlines'}
         params = {'site':SITEWIDE_PARAMS, 'page':page, 'posts':posts}
         self.render("list.html", params=params)
 
@@ -123,8 +152,8 @@ class SinglepostPage(Handler):
     """
     def get(self, post_id):
         """page get"""
-        current_post = PostEntity.get_by_id(post_id)
-        params = {'site':SITEWIDE_PARAMS, 'current_post':current_post}
+        current_post = PostEntity.get_by_id(int(post_id))
+        params = {'site':SITEWIDE_PARAMS, 'page':current_post}
         self.render("single.html", params=params)
 
 class NewpostPage(Handler):
@@ -134,7 +163,7 @@ class NewpostPage(Handler):
 
     def get(self):
         """ page get"""
-        page = {'title':'Write a new post'}
+        page = {'subject':'Write a new post'}
         params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("newpost.html", params=params)
 
@@ -172,7 +201,7 @@ class EditpostPage(Handler):
         """ page get"""
         title = 'Edit post ' + post_id
         permalink = '/blog/'+ post_id
-        page = {'title':title,
+        page = {'subject':title,
                 'permalink':permalink}
         params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("editpost.html", params=params)
@@ -185,7 +214,7 @@ class LoginPage(Handler):
 
     def get(self):
         """ page get"""
-        page = {'title':'Sign in to your account.'}
+        page = {'subject':'Sign in to your account.'}
         params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("login.html", params=params)
 
@@ -195,7 +224,7 @@ class SignupPage(Handler):
     SignupPage Handler
     """
 
-    page = {'title':'Sign up for a free account!'}
+    page = {'subject':'Sign up for a free account!'}
     def get(self):
         """ page get"""
         params = {'site':SITEWIDE_PARAMS, 'page':self.page}
@@ -225,7 +254,7 @@ class HomePage(Handler):
 
     def get(self):
         """ main get"""
-        page = {'title':'Your Blog Posts'}
+        page = {'subject':'Your Blog Posts'}
         params = {'site':SITEWIDE_PARAMS, 'page':page}
         self.render("login.html", params=params)
 
