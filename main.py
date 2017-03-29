@@ -1,7 +1,9 @@
 """
 mublog
-    this will probably never lint and be stuck with the old nasty
-    webapp2 reccommended monolith structure
+    This will probably be stuck with the old nasty monolith structure until I have
+    some refactor time. It should have been a q/d project but ended up just dirty.
+    I think appengine datastore is alright, but I wouldn't have made these choices
+    without a project specifying them. It's nice to be exposed to different things.
 """
 
 import datetime
@@ -66,14 +68,6 @@ class PostEntity(db.Model):
     likes = db.IntegerProperty(required=True)
     # liked_by = db.StringListProperty(required=True) # could be child entity
 
-class LikeEntity(db.Model):
-    """ like entity keeps track of individual likes
-        ReferenceProperty for PostEntity
-        Must have AuthorEntity id and username as well
-        properties
-            parent = PostEntity id
-    """
-    pass
 
 class AuthorEntity(db.Model):
     """ db author entity
@@ -88,12 +82,27 @@ class AuthorEntity(db.Model):
     password = db.StringProperty(required=True)
     email = db.StringProperty()
 
+class LikeEntity(db.Model):
+    """ like entity keeps track of individual likes
+        ReferenceProperty for PostEntity
+        Must have AuthorEntity id and username as well
+        properties
+            parent = PostEntity id
+    """
+    for_post = db.ReferenceProperty(PostEntity, collection_name="likes")
+    author = db.ReferenceProperty(AuthorEntity, collection_name="likes")
+    author_username = db.StringProperty(required=True) # for quick reference only
+
+
 class CommentEntity(db.Model):
     """ db comments
         properties
     """
     coment_text = db.TextProperty(required=True)
-    for_post = db.ReferenceProperty(required=True)
+    for_post = db.ReferenceProperty(PostEntity, collection_name="comments")
+    author = db.ReferenceProperty(AuthorEntity, collection_name="comments")
+    author_username = db.StringProperty(required=True) # for quick reference only
+
 
 """
 start handlers

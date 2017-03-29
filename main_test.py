@@ -12,15 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import webtest
-
+import unittest
 import main
 
 
-def test_get():
+'''def test_get():
+    """basic get test"""
     app = webtest.TestApp(main.app)
-
     response = app.get('/')
-
     assert response.status_int == 200
-    assert response.body == 'Hello, World!'
+'''
+
+class HashesTestCase(unittest.TestCase):
+    """test cases for hash functions"""
+    def hash_functions_should(self):
+        """test the hash helper functions"""
+        # salt len equal 8
+        self.assertEqual(len(main.gen_salt()), 8)
+        # hash_this returns str len 72
+        test_str = 'test string * stuff'
+        test_hash = main.hash_this(test_str)
+        self.assertEqual(len(test_hash), 72)
+        # check_hash returns true when should else none
+        self.assertEqual(main.check_hash(test_str, test_hash), True)
+        self.assertEqual(main.check_hash("false case", test_hash), None)
+
+if __name__ == '__main__':
+    unittest.main()
