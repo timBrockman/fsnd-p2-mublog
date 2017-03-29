@@ -68,7 +68,7 @@ class PostEntity(db.Model):
 
 class LikeEntity(db.Model):
     """ like entity keeps track of individual likes
-        Child of PostEntity
+        ReferenceProperty for PostEntity
         Must have AuthorEntity id and username as well
         properties
             parent = PostEntity id
@@ -92,7 +92,8 @@ class CommentEntity(db.Model):
     """ db comments
         properties
     """
-    pass
+    coment_text = db.TextProperty(required=True)
+    for_post = db.ReferenceProperty(required=True)
 
 """
 start handlers
