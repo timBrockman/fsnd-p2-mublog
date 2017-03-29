@@ -58,26 +58,35 @@ class PostEntity(db.Model):
             created: timestamp in normal y-m-d h:m:s
             author: author username
             likes: number of likes
-            liked_by: list of strings of usernames
     """
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(required=True)
     author = db.StringProperty(required=True)
     likes = db.IntegerProperty(required=True)
-    liked_by = db.StringListProperty(required=True)
+    # liked_by = db.StringListProperty(required=True) # could be child entity
 
+class LikeEntity(db.Model):
+    """ like entity keeps track of individual likes
+        Child of PostEntity
+        Must have AuthorEntity id and username as well
+        properties
+            parent = PostEntity id
+    """
+    pass
 
 class AuthorEntity(db.Model):
     """ db author entity
         properties
             username: unique string
-            password: hashed pass + username + salt
+            username_lc: unique string lowercase version of username
+            password: hashed pass + SECRET + salt
             email: optional email address
-            maybe blogposts: StringListProperty of permalinks
-            maybe likes: StringListProperty of liked permalinks
     """
-    pass
+    username = db.StringProperty(required=True)
+    username_lc = db.StringProperty(required=True)
+    password = db.StringProperty(required=True)
+    email = db.StringProperty()
 
 class CommentEntity(db.Model):
     """ db comments
@@ -139,7 +148,6 @@ class MainPage(Handler):
     """
     def get(self):
         """ page get"""
-        """posts = db.GqlQuery("SELECT * FROM PostEntity ORDER BY created DESC ")"""
         posts = PostEntity.all().order('-created')
         page = {'subject':'Recent Headlines'}
         params = {'site':SITEWIDE_PARAMS, 'page':page, 'posts':posts}
