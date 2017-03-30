@@ -7,45 +7,26 @@ mublog
 """
 
 import datetime
-import hashlib
 import json
 import os
-import random
 import re
 import ssl
-import string
-from secret import SECRET
 
 import webapp2
 import jinja2
 from google.appengine.ext import db
+from app.helpers.hasher import gen_salt, hash_this, check_hash
 
-#  jinja2 Environment constants
+# current host url for cors
+CURRENT_HOST = "http://localhost:8080, https://localhost:8080, https://fsnd-2.appspot.com/"
+
+# jinja2 Environment constants
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
 
-#sitewide contsants (modelish)
+# sitewide contsants (modelish)
 SITEWIDE_PARAMS = {'title':'MUBlog'}
-
-"""
-Hashing helper functions
-"""
-def gen_salt():
-    """returns 8 letter string"""
-    return ''.join(random.choice(string.letters) for x in xrange(8))
-
-def hash_this(tohash, salt=None):
-    """returns hash + salt from tohash"""
-    if salt is None:
-        salt = gen_salt()
-    return hashlib.sha256(str(tohash) + SECRET + salt).hexdigest() + salt
-
-def check_hash(tovalidate, hashed):
-    """returns true if tovalidate matches hashed"""
-    salt = hashed[-8:]
-    check = hash_this(tovalidate, salt)
-    return hashed == check
 
 
 """
@@ -65,7 +46,7 @@ class PostEntity(db.Model):
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(required=True)
     author = db.StringProperty(required=True)
-    likes = db.IntegerProperty(required=True)
+    like_total = db.IntegerProperty(required=True)
     # liked_by = db.StringListProperty(required=True) # could be child entity
 
 
@@ -135,8 +116,7 @@ class Handler(webapp2.RequestHandler):
                 error can be used for a message
         """
         self.response.headers.add('Access-Control-Allow-Origin', '*')
-        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin',
-                                  'http://localhost:8080, https://localhost:8080')
+        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', CURRENT_HOST)
         self.response.headers.add('Access-Control-Expose-Headers',
                                   'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
         self.response.headers['Content-Type'] = 'application/json'
@@ -191,17 +171,14 @@ class NewpostPage(Handler):
         subject = self.request.get('subject')
         content = self.request.get('content')
         post_time_stamp = datetime.datetime.now()
-        permalink = post_time_stamp.strftime('%s')
 
         if content and subject:
             params['error'] = False
-            blog_posts = PostEntity(permalink=permalink,
-                                    subject=subject,
+            blog_posts = PostEntity(subject=subject,
                                     content=content,
                                     created=post_time_stamp,
                                     author="testuser",
-                                    likes=0,
-                                    liked_by=["testuser"])
+                                    like_total=0)
             blog_posts.put()
             params['redirect'] = 'https://localhost:8080/' # blog/' + str(post.key().id())
         else:
