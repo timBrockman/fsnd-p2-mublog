@@ -16,6 +16,8 @@ import webapp2
 import jinja2
 from google.appengine.ext import db
 from app.helpers.hasher import gen_salt, hash_this, check_hash
+from app.models.entities import   PostEntity, AuthorEntity, LikeEntity, CommentEntity
+
 
 # current host url for cors
 CURRENT_HOST = "http://localhost:8080, https://localhost:8080, https://fsnd-2.appspot.com/"

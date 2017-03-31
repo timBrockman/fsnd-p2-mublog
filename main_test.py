@@ -1,7 +1,7 @@
 """
 Holy shit! Google app engine made local unit testing a pain
 ImportError: No module named appengine.ext
-so I'm flying blind on this one
+so I'm flying blind on many parts
 """
 import unittest
 #import main
