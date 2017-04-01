@@ -16,14 +16,13 @@ class PostEntity(db.Model):
             content: blog post body
             created: timestamp in normal y-m-d h:m:s
             author: author username
-            likes: number of likes
+            like_total: number of likes
     """
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(required=True)
     author = db.StringProperty(required=True)
     like_total = db.IntegerProperty(required=True)
-    # liked_by = db.StringListProperty(required=True) # could be child entity
 
 
 class AuthorEntity(db.Model):
@@ -44,11 +43,13 @@ class LikeEntity(db.Model):
         ReferenceProperty for PostEntity
         Must have AuthorEntity id and username as well
         properties
-            parent = PostEntity id
+            for_post = reference PostEntity
+            author_username = AuthorEntity username
+            author = reference AuthorEntity
     """
     for_post = db.ReferenceProperty(PostEntity, collection_name="likes")
     author = db.ReferenceProperty(AuthorEntity, collection_name="likes")
-    author_username = db.StringProperty(required=True) # for quick reference only
+    author_username = db.StringProperty(required=True)
 
 
 class CommentEntity(db.Model):
