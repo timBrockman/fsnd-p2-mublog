@@ -30,7 +30,7 @@ class AuthorEntity(db.Model):
         properties
             username: unique string
             username_lc: unique string lowercase version of username
-            password: hashed pass + SECRET + salt
+            password: hashed (pass + SECRET + salt)
             email: optional email address
     """
     username = db.StringProperty(required=True)
