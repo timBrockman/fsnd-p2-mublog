@@ -39,7 +39,7 @@ class AuthorEntity(db.Model):
     def register(cls, username, password, email):
         """creates new user (doesn't check if one exsist)"""
         pw_hash = hash_this(password)
-        return AuthorEntity()
+        return AuthorEntity(username = username, password = pw_hash, email=email)
 
     @classmethod
     def login(cls, username, password):
