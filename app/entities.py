@@ -6,14 +6,15 @@ extend db.Model
   LikeEntity
   CommentEntity
 """
+from hasher import hash_this, check_hash
 from google.appengine.ext import db
 
 class AuthorEntity(db.Model):
     """ db author entity
-        properties
-            username: unique string
-            pw_hash: hashed (pass + SECRET + salt)
-            email: optional email address
+
+        :param username: unique string
+        :param pw_hash: hashed (pass + SECRET + salt)
+        :param email: optional email address
         classmethod
             read_by_id
             read_my_name
@@ -27,17 +28,18 @@ class AuthorEntity(db.Model):
     @classmethod
     def read_by_id(cls, uid):
         """convienient get_by_id method"""
-        pass
+        return AuthorEntity.get_by_id(uid)
 
     @classmethod
     def read_my_name(cls, username):
         """convienient filter by username method"""
-        pass
+        return AuthorEntity.all().filter('username =', username).get()
 
     @classmethod
     def register(cls, username, password, email):
-        """creates new user (if one doesn't exsist)"""
-        pass
+        """creates new user (doesn't check if one exsist)"""
+        pw_hash = hash_this(password)
+        return AuthorEntity()
 
     @classmethod
     def login(cls, username, password):
@@ -46,12 +48,12 @@ class AuthorEntity(db.Model):
 
 class PostEntity(db.Model):
     """ db blog post entity
-        properties
-            subject: blog post title
-            content: blog post body
-            created: timestamp in normal y-m-d h:m:s
-            author: author username
-            like_total: number of likes
+
+        :param subject: blog post title
+        :param content: blog post body
+        :param created: timestamp in normal y-m-d h:m:s
+        :param author: author username
+        :param like_total: number of likes
         classmethod
             create
             update_by_id
@@ -68,12 +70,12 @@ class PostEntity(db.Model):
 
 class LikeEntity(db.Model):
     """ like entity keeps track of individual likes
+
         ReferenceProperty for PostEntity
         Must have AuthorEntity id and username as well
-        properties
-            for_post = reference PostEntity
-            author_username = AuthorEntity username
-            author = reference AuthorEntity
+        :param for_post = reference PostEntity
+        :param author_username = AuthorEntity username
+        :param author = reference AuthorEntity
     """
     for_post = db.ReferenceProperty(PostEntity, collection_name="likes")
     author = db.ReferenceProperty(AuthorEntity, collection_name="likes")

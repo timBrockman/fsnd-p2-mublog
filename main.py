@@ -15,8 +15,8 @@ import ssl
 import webapp2
 import jinja2
 from google.appengine.ext import db
-from app.helpers.hasher import gen_salt, hash_this, check_hash
-from app.models.entities import   PostEntity, AuthorEntity, LikeEntity, CommentEntity
+from app.hasher import gen_salt, hash_this, check_hash
+from app.entities import   PostEntity, AuthorEntity, LikeEntity, CommentEntity
 
 
 # current host url for cors

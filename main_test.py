@@ -1,11 +1,11 @@
 """
-Holy shit! Google app engine made local unit testing a pain
+Google app engine made local unit testing a pain
 ImportError: No module named appengine.ext
 so I'm flying blind on many parts
 """
 import unittest
 #import main
-from app.helpers.hasher import gen_salt, hash_this, check_hash
+from app.hasher import gen_salt, hash_this, check_hash
 
 '''class SanityTest(unittest.TestCase):
     """testing sanity"""
