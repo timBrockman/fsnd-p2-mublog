@@ -8,6 +8,41 @@ extend db.Model
 """
 from google.appengine.ext import db
 
+class AuthorEntity(db.Model):
+    """ db author entity
+        properties
+            username: unique string
+            pw_hash: hashed (pass + SECRET + salt)
+            email: optional email address
+        classmethod
+            read_by_id
+            read_my_name
+            register (create)
+            login
+    """
+    username = db.StringProperty(required=True)
+    password = db.StringProperty(required=True)
+    email = db.StringProperty()
+
+    @classmethod
+    def read_by_id(cls, uid):
+        """convienient get_by_id method"""
+        pass
+
+    @classmethod
+    def read_my_name(cls, username):
+        """convienient filter by username method"""
+        pass
+
+    @classmethod
+    def register(cls, username, password, email):
+        """creates new user (if one doesn't exsist)"""
+        pass
+
+    @classmethod
+    def login(cls, username, password):
+        """logs in user if credentials check out"""
+        pass
 
 class PostEntity(db.Model):
     """ db blog post entity
@@ -17,26 +52,19 @@ class PostEntity(db.Model):
             created: timestamp in normal y-m-d h:m:s
             author: author username
             like_total: number of likes
+        classmethod
+            create
+            update_by_id
+            read_by_id
+            delete_by_id
     """
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(required=True)
-    author = db.StringProperty(required=True)
+    author = db.ReferenceProperty(AuthorEntity, collection_name="blog_posts")
     like_total = db.IntegerProperty(required=True)
 
 
-class AuthorEntity(db.Model):
-    """ db author entity
-        properties
-            username: unique string
-            username_lc: unique string lowercase version of username
-            password: hashed (pass + SECRET + salt)
-            email: optional email address
-    """
-    username = db.StringProperty(required=True)
-    username_lc = db.StringProperty(required=True)
-    password = db.StringProperty(required=True)
-    email = db.StringProperty()
 
 class LikeEntity(db.Model):
     """ like entity keeps track of individual likes
