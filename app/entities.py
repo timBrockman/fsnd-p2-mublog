@@ -23,7 +23,7 @@ class AuthorEntity(db.Model):
     """
     username = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
-    email = db.StringProperty()
+    email = db.EmailProperty()
 
     @classmethod
     def read_by_id(cls, uid):
@@ -39,7 +39,7 @@ class AuthorEntity(db.Model):
     def register(cls, username, password, email):
         """creates new user (doesn't check if one exsist)"""
         pw_hash = hash_this(password)
-        return AuthorEntity(username = username, password = pw_hash, email=email)
+        return AuthorEntity(username=username, password=pw_hash, email=email)
 
     @classmethod
     def login(cls, username, password):

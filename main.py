@@ -20,7 +20,8 @@ from app.entities import   PostEntity, AuthorEntity, LikeEntity, CommentEntity
 
 
 # current host url for cors
-CURRENT_HOST = "http://localhost:8080, https://localhost:8080, https://fsnd-2.appspot.com, https://fsnd-2.appspot.com/newpost"
+CURRENT_HOST = """http://localhost:8080, https://localhost:8080,
+                  https://fsnd-2.appspot.com, https://fsnd-2.appspot.com/newpost"""
 
 # jinja2 Environment constants
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -218,7 +219,6 @@ class HomePage(Handler):
 
 """
 start simple router
-    (this will never lint)
 """
 
 app = webapp2.WSGIApplication([
