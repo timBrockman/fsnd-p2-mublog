@@ -206,7 +206,7 @@ class SignupPage(Handler):
         self.xhr_json(params)
 
 
-class HomePage(Handler):
+class WelcomePage(Handler):
     """
     HomePage Handler
     """
@@ -230,7 +230,7 @@ app = webapp2.WSGIApplication([
     (r'/edit/([0-9]+)', EditpostPage),
     (r'/delete/([0-9]+)', MainPage),
     (r'/login/?', LoginPage),
-    (r'/welcome/?', HomePage),
+    (r'/welcome/?', WelcomePage),
     (r'/signup/?', SignupPage),
     (r'/logout/?', MainPage),
 ], debug=True)
