@@ -1,9 +1,7 @@
 """
 mublog
-    This will probably be stuck with the old nasty monolith structure until I have
-    some refactor time. It should have been a q/d project but ended up just dirty.
-    I think appengine datastore is alright, but I wouldn't have made these choices
-    without a project specifying them. It's nice to be exposed to different things.
+    this version only addresses the user login and auth
+    other routes will or requests will set to serve
 """
 
 import datetime
@@ -16,7 +14,7 @@ import webapp2
 import jinja2
 from google.appengine.ext import db
 from app.hasher import gen_salt, hash_this, check_hash
-from app.entities import   PostEntity, AuthorEntity, LikeEntity, CommentEntity
+from app.entities import   AuthorEntity
 
 
 # current host url for cors
@@ -57,10 +55,13 @@ class Handler(webapp2.RequestHandler):
 
     def set_secure_cookie(self, cookie_name, cookie_val):
         """sets a hashed cookie"""
-        pass
+        secure_cookie = hash_this(cookie_val)
+        self.response.headers.add('Set-Cookie', '%s=%s; Path=/' % (cookie_name, secure_cookie))
 
-    def read_secure_cookie(self):
+    def read_secure_cookie(self, cookie_name):
         """reads the cookie"""
+        #cookie_val = self.request.cookies.get(cookie_name)
+        #return cookie_val and check_hash(cookie_val)
         pass
 
     def login(self):
