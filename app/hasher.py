@@ -2,10 +2,7 @@
 Hashing helper functions
 """
 
-import hashlib
 import hmac
-import random
-import string
 from secret import SECRET
 
 
