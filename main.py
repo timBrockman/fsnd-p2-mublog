@@ -13,7 +13,7 @@ import ssl
 import webapp2
 import jinja2
 from google.appengine.ext import db
-from app.hasher import gen_salt, hash_this, check_hash
+from app.hasher import hash_this, check_hash
 from app.entities import   AuthorEntity
 
 
@@ -60,16 +60,19 @@ class Handler(webapp2.RequestHandler):
 
     def read_secure_cookie(self, cookie_name):
         """reads the cookie"""
-        #cookie_val = self.request.cookies.get(cookie_name)
-        #return cookie_val and check_hash(cookie_val)
-        pass
+        cookie_val = self.request.cookies.get(cookie_name)
+        return cookie_val and check_hash(cookie_val)
 
-    def login(self):
+    def login(self, user):
         """login"""
-        pass
+        self.set_secure_cookie('user_id', str(user.key().id()))
 
     def logout(self):
         """logout"""
+        self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
+
+    def initialize(self, *a, **kw):
+        """handler initialize & check login"""
         pass
 
     def xhr_json(self, params):
