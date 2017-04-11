@@ -14,7 +14,7 @@ import webapp2
 import jinja2
 from google.appengine.ext import db
 from app.hasher import hash_this, check_hash
-from app.entities import   AuthorEntity
+from app.entities import AuthorEntity
 
 
 # current host url for cors
@@ -69,11 +69,7 @@ class Handler(webapp2.RequestHandler):
 
     def logout(self):
         """logout"""
-        self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
-
-    def initialize(self, *a, **kw):
-        """handler initialize & check login"""
-        pass
+        self.response.headers.add('Set-Cookie', 'user_id=; Path=/')
 
     def xhr_json(self, params):
         """ handles the json shtuff
@@ -100,76 +96,6 @@ class Handler(webapp2.RequestHandler):
 
 # controllers
 
-class MainPage(Handler):
-    """
-    MainPage Route Handler
-    """
-    def get(self):
-        """ page get"""
-        posts = PostEntity.all().order('-created')
-        page = {'subject':'Recent Headlines'}
-        params = {'site':SITEWIDE_PARAMS, 'page':page, 'posts':posts}
-        self.render("list.html", params=params)
-
-
-class SinglepostPage(Handler):
-    """
-    Single blog post Handler
-    """
-    def get(self, post_id):
-        """page get"""
-        current_post = PostEntity.get_by_id(int(post_id))
-        params = {'site':SITEWIDE_PARAMS, 'page':current_post}
-        self.render("single.html", params=params)
-
-class NewpostPage(Handler):
-    """
-    NewpostPage Handler
-    """
-
-    def get(self):
-        """ page get"""
-        page = {'subject':'Write a new post'}
-        params = {'site':SITEWIDE_PARAMS, 'page':page}
-        self.render("newpost.html", params=params)
-
-    def post(self):
-        """page post"""
-        params = {}
-        subject = self.request.get('subject')
-        content = self.request.get('content')
-        post_time_stamp = datetime.datetime.now()
-
-        if content and subject:
-            params['error'] = False
-            blog_posts = PostEntity(subject=subject,
-                                    content=content,
-                                    created=post_time_stamp,
-                                    author="testuser",
-                                    like_total=0)
-            blog_posts.put()
-            params['redirect'] = 'https://localhost:8080/' # blog/' + str(post.key().id())
-        else:
-            params['error'] = "The subject and content are both required."
-        params['subject'] = subject
-        params['content'] = content
-        self.xhr_json(params)
-
-class EditpostPage(Handler):
-    """
-    EditpostPage Handler
-    """
-
-    def get(self, post_id):
-        """ page get"""
-        title = 'Edit post ' + post_id
-        permalink = '/blog/'+ post_id
-        page = {'subject':title,
-                'permalink':permalink}
-        params = {'site':SITEWIDE_PARAMS, 'page':page}
-        self.render("editpost.html", params=params)
-
-
 class LoginPage(Handler):
     """
     LoginPage Handler
@@ -187,7 +113,7 @@ class SignupPage(Handler):
     SignupPage Handler
     """
 
-    page = {'subject':'Sign up for a free account!'}
+    page = {'subject':"Sign up! It's pretty sweet!"}
     def get(self):
         """ page get"""
         params = {'site':SITEWIDE_PARAMS, 'page':self.page}
@@ -226,16 +152,8 @@ start simple router
 """
 
 app = webapp2.WSGIApplication([
-    (r'/', MainPage),
-    (r'/newpost/?', NewpostPage),
-    (r'/blog/?', MainPage),
-    (r'/blog/([0-9]+)', SinglepostPage),
-    (r'/edit/?', MainPage),
-    (r'/edit/([0-9]+)', EditpostPage),
-    (r'/delete/([0-9]+)', MainPage),
     (r'/login/?', LoginPage),
     (r'/welcome/?', WelcomePage),
-    (r'/signup/?', SignupPage),
-    (r'/logout/?', MainPage),
+    (r'/signup/?', SignupPage)
 ], debug=True)
 
