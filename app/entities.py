@@ -3,7 +3,7 @@ start models - uses no reference properties
 extend db.Model
   AuthorEntity
 """
-from hasher import hash_this, check_hash
+from hasher import hash_pw, check_pw
 from google.appengine.ext import db
 
 class AuthorEntity(db.Model):
@@ -14,12 +14,12 @@ class AuthorEntity(db.Model):
         :param email: optional email address
         classmethod
             read_by_id
-            read_my_name
+            read_by_name
             register (create)
             login
     """
     username = db.StringProperty(required=True)
-    password = db.StringProperty(required=True)
+    pw_hash = db.StringProperty(required=True)
     email = db.EmailProperty()
 
     @classmethod
@@ -28,18 +28,20 @@ class AuthorEntity(db.Model):
         return AuthorEntity.get_by_id(uid)
 
     @classmethod
-    def read_my_name(cls, username):
+    def read_by_name(cls, username):
         """convienient filter by username method"""
         return AuthorEntity.all().filter('username =', username).get()
 
     @classmethod
     def register(cls, username, password, email):
         """creates new user (doesn't check if one exsist)"""
-        pw_hash = hash_this(password)
-        return AuthorEntity(username=username, password=pw_hash, email=email)
+        pw_hash = hash_pw(username, password)
+        return AuthorEntity(username=username, pw_hash=pw_hash, email=email)
 
     @classmethod
     def login(cls, username, password):
-        """logs in user if credentials check out"""
-        pass
+        """returns user obj if credentials check out"""
+        user = cls.read_by_name(username)
+        if user and check_pw(username, password, user.pw_hash):
+            return user
 
