@@ -72,27 +72,31 @@ class Handler(webapp2.RequestHandler):
         self.response.headers.add('Set-Cookie', 'user_id=; Path=/')
 
     def xhr_json(self, params):
-        """ handles the json shtuff
+        """ handles the json stuff
                 adds cors for json post requests
             params will be json dumped
             params.error
                 if error: will respond with 400
                 error can be used for a message
         """
-        self.response.headers.add('Access-Control-Allow-Origin', '*')
-        self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', CURRENT_HOST)
+        self.response.headers.add('Access-Control-Allow-Origin', CURRENT_HOST)
         self.response.headers.add('Access-Control-Expose-Headers',
                                   'AMP-Access-Control-Allow-Source-Origin, AMP-Redirect-To')
-        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers.add('Access-Control-Allow-Credentials', 'true')
         self.response.headers.add('Access-Control-Allow-Headers',
                                   'Origin, X-Requested-With, Content-Type, Accept')
+        #self.response.headers.add('AMP-Access-Control-Allow-Source-Origin', CURRENT_HOST)
+        self.response.headers['AMP-Same-Origin'] = 'true'
+        self.response.headers['AMP-Access-Control-Allow-Source-Origin'] = 'http://localhost:8080'
+        self.response.headers['TURD-Face'] = 'poop-header'
+        self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
         if params['error']:
             self.response.set_status(400)
+            self.response.out.write(json.dumps(params))
         elif params['redirect']:
-            self.response.headers.add('AMP-Redirect-To', params['redirect'])
-            self.redirect(params['redirect'])
-        self.response.out.write(json.dumps(params))
+            self.response.headers['AMP-Redirect-To'] = params['redirect']
+            #self.redirect(params['redirect'])
 
 # controllers
 
@@ -127,12 +131,15 @@ class SignupPage(Handler):
 
         if username and password and (password == verify):
             error = False
+            redirect = 'http://localhost:8080/login/'
         else:
             error = "there are plenty of problems"
+            redirect = ''
         params = {}
         params['username'] = username
         params['password'] = password
         params['error'] = error
+        params['redirect'] = redirect
         self.xhr_json(params)
 
 
